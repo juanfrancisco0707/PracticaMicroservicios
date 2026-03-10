@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catálogo de Productos — MicroTienda</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg: #0f1117;
+            --surface: #1a1d27;
+            --border: #2a2d3e;
+            --accent: #43e97b;
+            --accent-dim: rgba(67, 233, 123, .12);
+            --purple: #6c63ff;
+            --text: #e2e8f0;
+            --muted: #8892a4;
+            --error: #ff6584;
+            --radius: 14px;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            padding-top: 70px;
+            min-height: 100vh;
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: .9rem 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            background: rgba(15, 17, 23, .9);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            z-index: 200;
+        }
+
+        nav a {
+            color: var(--muted);
+            text-decoration: none;
+            font-size: .85rem;
+            transition: color .2s;
+        }
+
+        nav a:hover {
+            color: var(--text);
+        }
+
+        nav a.active {
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .auth-pill {
+            margin-left: auto;
+            font-size: .78rem;
+            padding: .3rem .9rem;
+            border-radius: 999px;
+            border: 1px solid var(--border);
+            color: var(--muted);
+            cursor: pointer;
+            background: transparent;
+            transition: all .2s;
+        }
+
+        .auth-pill.on {
+            border-color: rgba(67, 233, 123, .4);
+            color: var(--accent);
+            background: rgba(67, 233, 123, .08);
+        }
+
+        main {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header-row {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        h1 {
+            font-size: 1.6rem;
+            font-weight: 700;
+        }
+
+        .service-badge {
+            font-size: .72rem;
+            padding: .25rem .75rem;
+            border-radius: 999px;
+            background: rgba(67, 233, 123, .12);
+            border: 1px solid rgba(67, 233, 123, .3);
+            color: var(--accent);
+        }
+
+        .btn {
+            padding: .6rem 1.2rem;
+            border-radius: 10px;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: .85rem;
+            transition: all .2s;
+            border: none;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: #000;
+        }
+
+        .btn-primary:hover {
+            opacity: .88;
+        }
+
+        .btn-ghost {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--muted);
+        }
+
+        .btn-ghost:hover {
+            border-color: var(--text);
+            color: var(--text);
+        }
+
+        .btn-danger {
+            background: rgba(255, 101, 132, .15);
+            border: 1px solid rgba(255, 101, 132, .3);
+            color: var(--error);
+        }
+
+        .btn-danger:hover {
+            background: rgba(255, 101, 132, .25);
+        }
+
+        /* Filtros */
+        .filters {
+            display: flex;
+            gap: .75rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .filters select,
+        .filters input {
+            padding: .55rem .9rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 9px;
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            font-size: .85rem;
+        }
+
+        .filters select:focus,
+        .filters input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        /* Grid de productos */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 1.25rem;
+        }
+
+        .prod-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: .75rem;
+            transition: border-color .2s, box-shadow .2s;
+        }
+
+        .prod-card:hover {
+            border-color: var(--accent);
+            box-shadow: 0 4px 20px rgba(67, 233, 123, .08);
+        }
+
+        .prod-name {
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .prod-desc {
+            font-size: .82rem;
+            color: var(--muted);
+            line-height: 1.5;
+            flex: 1;
+        }
+
+        .prod-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .prod-price {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .prod-stock {
+            font-size: .75rem;
+            color: var(--muted);
+        }
+
+        .prod-cat {
+            font-size: .7rem;
+            padding: .2rem .65rem;
+            border-radius: 999px;
+            background: rgba(108, 99, 255, .12);
+            border: 1px solid rgba(108, 99, 255, .25);
+            color: var(--purple);
+            margin-bottom: .25rem;
+            display: inline-block;
+        }
+
+        .prod-actions {
+            display: flex;
+            gap: .5rem;
+            margin-top: .5rem;
+        }
+
+        .prod-actions .btn {
+            padding: .45rem .85rem;
+            font-size: .78rem;
+            flex: 1;
+        }
+
+        .empty {
+            text-align: center;
+            color: var(--muted);
+            padding: 4rem;
+            grid-column: 1/-1;
+        }
+
+        /* Modal */
+        .overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .6);
+            backdrop-filter: blur(4px);
+            z-index: 300;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity .25s;
+        }
+
+        .overlay.open {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .modal {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 2rem;
+            width: 100%;
+            max-width: 500px;
+            transform: translateY(20px);
+            transition: transform .25s;
+        }
+
+        .overlay.open .modal {
+            transform: translateY(0);
+        }
+
+        .modal h2 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            font-size: .75rem;
+            font-weight: 500;
+            color: var(--muted);
+            margin-bottom: .35rem;
+            margin-top: .9rem;
+            text-transform: uppercase;
+            letter-spacing: .05em;
+        }
+
+        label:first-of-type {
+            margin-top: 0;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: .7rem .9rem;
+            background: #0f1117;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            font-size: .875rem;
+            outline: none;
+            resize: vertical;
+            transition: border-color .2s;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            border-color: var(--accent);
+        }
+
+        .row2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: .75rem;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: .75rem;
+            margin-top: 1.5rem;
+            justify-content: flex-end;
+        }
+
+        .msg {
+            margin-top: .75rem;
+            font-size: .82rem;
+            padding: .55rem .8rem;
+            border-radius: 8px;
+        }
+
+        .msg.error {
+            background: rgba(255, 101, 132, .1);
+            border: 1px solid rgba(255, 101, 132, .3);
+            color: var(--error);
+        }
+
+        .msg.success {
+            background: rgba(67, 233, 123, .1);
+            border: 1px solid rgba(67, 233, 123, .3);
+            color: var(--accent);
+        }
+
+        /* Loader */
+        .spinner {
+            width: 36px;
+            height: 36px;
+            border: 3px solid var(--border);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin .7s linear infinite;
+            margin: 3rem auto;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <nav>
+        <a href="index.html">⬅ Inicio</a>
+        <a href="login.html">🔐 Login</a>
+        <a class="active" href="productos.html">🛍️ Catálogo</a>
+        <a href="pedidos.html">📦 Pedidos</a>
+        <button class="auth-pill" id="auth-pill" onclick="logout()">Sin sesión</button>
+    </nav>
+
+    <main>
+        <div class="header-row">
+            <h1>🛍️ Catálogo de Productos</h1>
+            <span class="service-badge">catalogo-service · Supabase</span>
+            <button class="btn btn-primary" id="btn-nuevo" onclick="abrirModal()" style="margin-left:auto"
+                title="Requiere sesión iniciada">+ Nuevo Producto</button>
+        </div>
+
+        <div class="filters">
+            <select id="filtro-cat" onchange="cargarProductos()">
+                <option value="">Todas las categorías</option>
+            </select>
+            <input id="filtro-buscar" placeholder="🔍 Buscar producto..." oninput="filtrarLocal()"
+                style="min-width:200px">
+        </div>
+
+        <div class="grid" id="grid">
+            <div class="spinner"></div>
+        </div>
+    </main>
+
+    <!-- Modal crear/editar -->
+    <div class="overlay" id="overlay" onclick="cerrarSiOverlay(event)">
+        <div class="modal">
+            <h2 id="modal-title">Nuevo Producto</h2>
+            <form id="prod-form" onsubmit="guardarProducto(event)">
+                <input type="hidden" id="prod-id">
+                <label for="f-nombre">Nombre *</label>
+                <input id="f-nombre" type="text" placeholder="Laptop HP 15&quot;" required>
+                <label for="f-desc">Descripción</label>
+                <textarea id="f-desc" rows="2" placeholder="Detalles del producto..."></textarea>
+                <div class="row2">
+                    <div>
+                        <label for="f-precio">Precio (MXN) *</label>
+                        <input id="f-precio" type="number" min="0" step="0.01" placeholder="999.00" required>
+                    </div>
+                    <div>
+                        <label for="f-stock">Stock</label>
+                        <input id="f-stock" type="number" min="0" placeholder="10">
+                    </div>
+                </div>
+                <label for="f-cat">Categoría</label>
+                <select id="f-cat">
+                    <option value="">Sin categoría</option>
+                </select>
+                <div class="msg" id="form-msg" style="display:none"></div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-ghost" onclick="cerrarModal()">Cancelar</button>
+                    <button type="submit" class="btn btn-primary" id="btn-guardar">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const API = 'http://localhost:8080/api/catalogo';
+        let todosProductos = [];
+        let categorias = [];
+
+        // ── Estado de sesión ─────────────────────────────────────────────────────
+        function getToken() { return localStorage.getItem('token'); }
+        function actualizarPill() {
+            const pill = document.getElementById('auth-pill');
+            if (getToken()) {
+                pill.textContent = '✅ Sesión activa · Salir';
+                pill.classList.add('on');
+            } else {
+                pill.textContent = 'Sin sesión';
+                pill.classList.remove('on');
+            }
+        }
+        function logout() { localStorage.removeItem('token'); actualizarPill(); }
+
+        // ── Cargar categorías ────────────────────────────────────────────────────
+        async function cargarCategorias() {
+            try {
+                const res = await fetch(`${API}/categories`);
+                categorias = await res.json();
+                const sel1 = document.getElementById('filtro-cat');
+                const sel2 = document.getElementById('f-cat');
+                categorias.forEach(c => {
+                    sel1.innerHTML += `<option value="${c.id}">${c.nombre}</option>`;
+                    sel2.innerHTML += `<option value="${c.id}">${c.nombre}</option>`;
+                });
+            } catch (e) { console.error('Error cargando categorías:', e); }
+        }
+
+        // ── Cargar productos ─────────────────────────────────────────────────────
+        async function cargarProductos() {
+            document.getElementById('grid').innerHTML = '<div class="spinner"></div>';
+            const cat = document.getElementById('filtro-cat').value;
+            let url = `${API}/products`;
+            if (cat) url += `?categoria=${cat}`;
+            try {
+                const res = await fetch(url);
+                todosProductos = await res.json();
+                renderProductos(todosProductos);
+            } catch (e) {
+                document.getElementById('grid').innerHTML = '<p class="empty">❌ Error conectando con catalogo-service</p>';
+            }
+        }
+
+        function filtrarLocal() {
+            const q = document.getElementById('filtro-buscar').value.toLowerCase();
+            renderProductos(q ? todosProductos.filter(p => p.nombre.toLowerCase().includes(q) || (p.descripcion || '').toLowerCase().includes(q)) : todosProductos);
+        }
+
+        function renderProductos(lista) {
+            const grid = document.getElementById('grid');
+            if (!lista.length) { grid.innerHTML = '<p class="empty">No se encontraron productos</p>'; return; }
+            grid.innerHTML = lista.map(p => `
+            <div class="prod-card" id="card-${p.id}">
+                <div>
+                    ${p.categoria_nombre ? `<span class="prod-cat">${p.categoria_nombre}</span>` : ''}
+                    <div class="prod-name">${p.nombre}</div>
+                </div>
+                <div class="prod-desc">${p.descripcion || '<em>Sin descripción</em>'}</div>
+                <div class="prod-meta">
+                    <span class="prod-price">$${Number(p.precio).toLocaleString('es-MX', { minimumFractionDigits: 2 })}</span>
+                    <span class="prod-stock">Stock: ${p.stock ?? 0}</span>
+                </div>
+                <div class="prod-actions">
+                    <button class="btn btn-ghost"   onclick="editarProducto(${JSON.stringify(p).replace(/"/g, '&quot;')})">✏️ Editar</button>
+                    <button class="btn btn-danger"  onclick="eliminarProducto('${p.id}', '${p.nombre.replace(/'/g, "\\'")}')" >🗑 Eliminar</button>
+                </div>
+            </div>`).join('');
+        }
+
+        // ── Modal ────────────────────────────────────────────────────────────────
+        function abrirModal(p = null) {
+            if (!getToken()) { alert('⚠️ Debes iniciar sesión para gestionar productos.\nVe a Login.'); return; }
+            document.getElementById('modal-title').textContent = p ? 'Editar Producto' : 'Nuevo Producto';
+            document.getElementById('prod-id').value = p?.id || '';
+            document.getElementById('f-nombre').value = p?.nombre || '';
+            document.getElementById('f-desc').value = p?.descripcion || '';
+            document.getElementById('f-precio').value = p?.precio || '';
+            document.getElementById('f-stock').value = p?.stock ?? 0;
+            document.getElementById('f-cat').value = p?.categoria_id || '';
+            document.getElementById('form-msg').style.display = 'none';
+            document.getElementById('overlay').classList.add('open');
+        }
+
+        function editarProducto(p) { abrirModal(p); }
+
+        function cerrarModal() { document.getElementById('overlay').classList.remove('open'); }
+        function cerrarSiOverlay(e) { if (e.target.id === 'overlay') cerrarModal(); }
+
+        async function guardarProducto(e) {
+            e.preventDefault();
+            const id = document.getElementById('prod-id').value;
+            const body = {
+                nombre: document.getElementById('f-nombre').value,
+                descripcion: document.getElementById('f-desc').value,
+                precio: parseFloat(document.getElementById('f-precio').value),
+                stock: parseInt(document.getElementById('f-stock').value) || 0,
+                categoria_id: document.getElementById('f-cat').value || null
+            };
+            const btn = document.getElementById('btn-guardar');
+            btn.disabled = true; btn.textContent = 'Guardando...';
+
+            try {
+                const url = id ? `${API}/products/${id}` : `${API}/products`;
+                const method = id ? 'PUT' : 'POST';
+                const res = await fetch(url, {
+                    method, headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${getToken()}` },
+                    body: JSON.stringify(body)
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Error');
+
+                mostrarMsgModal('✅ ' + data.message, 'success');
+                setTimeout(() => { cerrarModal(); cargarProductos(); }, 900);
+            } catch (err) {
+                mostrarMsgModal('❌ ' + err.message, 'error');
+            } finally {
+                btn.disabled = false; btn.textContent = 'Guardar';
+            }
+        }
+
+        function mostrarMsgModal(txt, tipo) {
+            const el = document.getElementById('form-msg');
+            el.textContent = txt; el.className = `msg ${tipo}`; el.style.display = 'block';
+        }
+
+        async function eliminarProducto(id, nombre) {
+            if (!getToken()) { alert('⚠️ Debes iniciar sesión.'); return; }
+            if (!confirm(`¿Desactivar el producto "${nombre}"?`)) return;
+            try {
+                const res = await fetch(`${API}/products/${id}`, {
+                    method: 'DELETE', headers: { 'Authorization': `Bearer ${getToken()}` }
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error);
+                cargarProductos();
+            } catch (err) { alert('❌ ' + err.message); }
+        }
+
+        // ── Init ─────────────────────────────────────────────────────────────────
+        actualizarPill();
+        cargarCategorias().then(cargarProductos);
+    </script>
+</body>
+
+</html>

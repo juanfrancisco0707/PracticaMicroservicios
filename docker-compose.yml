@@ -1,0 +1,84 @@
+version: '3.8'
+
+services:
+  # Base de datos para el microservicio de Usuarios
+  db-usuarios:
+    image: mongo:latest
+    container_name: db-usuarios
+    ports:
+      - "27018:27017"
+    volumes:
+      - mongo-usuarios-data:/data/db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=profeAdmin
+      - MONGO_INITDB_ROOT_PASSWORD=password123
+
+  # Base de datos para el microservicio de Pedidos
+  db-pedidos:
+    image: mongo:latest
+    container_name: db-pedidos
+    ports:
+      - "27019:27017"
+    volumes:
+      - mongo-pedidos-data:/data/db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=profeAdmin
+      - MONGO_INITDB_ROOT_PASSWORD=password123
+
+  # Microservicio de Usuarios (Node.js + MongoDB)
+  usuarios-service:
+    build: ./usuarios-service
+    container_name: usuarios-service
+    ports:
+      - "3001:3000"
+    depends_on:
+      - db-usuarios
+    environment:
+      - MONGO_URL=mongodb://profeAdmin:password123@db-usuarios:27017/authDB?authSource=admin
+      - JWT_SECRET=supersecretkey
+
+  # Microservicio de Pedidos (Python + MongoDB)
+  pedidos-service:
+    build: ./pedidos-service
+    container_name: pedidos-service
+    ports:
+      - "3002:8000"
+    depends_on:
+      - db-pedidos
+    environment:
+      - MONGO_URL=mongodb://profeAdmin:password123@db-pedidos:27017/ordersDB?authSource=admin
+      - JWT_SECRET=supersecretkey
+
+  # ── NUEVO ── Microservicio de Catálogo (Node.js + Supabase PostgreSQL)
+  catalogo-service:
+    build: ./catalogo-service
+    container_name: catalogo-service
+    ports:
+      - "3003:3000"
+    environment:
+      - SUPABASE_URL=https://mrzczeklootzbqxgenbe.supabase.co
+      - SUPABASE_ANON_KEY=sb_publishable_GVgUVLfc-GXWuL3VqtaUoA_PZbA2brl
+      - JWT_SECRET=supersecretkey
+      - PORT=3000
+
+  # ── NUEVO ── Frontend estático (HTML + Nginx)
+  frontend:
+    build: ./frontend
+    container_name: frontend
+    ports:
+      - "8081:80"
+
+  # Gateway (Nginx) — punto de entrada único
+  gateway:
+    build: ./nginx
+    container_name: gateway
+    ports:
+      - "8080:80"
+    depends_on:
+      - usuarios-service
+      - pedidos-service
+      - catalogo-service
+
+volumes:
+  mongo-usuarios-data:
+  mongo-pedidos-data:

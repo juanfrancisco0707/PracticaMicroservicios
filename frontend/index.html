@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MicroTienda — Sistema de Microservicios</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg:        #0f1117;
+            --surface:   #1a1d27;
+            --border:    #2a2d3e;
+            --accent:    #6c63ff;
+            --accent2:   #ff6584;
+            --accent3:   #43e97b;
+            --text:      #e2e8f0;
+            --muted:     #8892a4;
+            --radius:    14px;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .hero {
+            text-align: center;
+            max-width: 700px;
+        }
+
+        .badge {
+            display: inline-block;
+            background: rgba(108,99,255,0.15);
+            border: 1px solid rgba(108,99,255,0.3);
+            color: var(--accent);
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            padding: 0.3rem 1rem;
+            border-radius: 999px;
+            margin-bottom: 1.5rem;
+        }
+
+        h1 {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 700;
+            line-height: 1.15;
+            background: linear-gradient(135deg, #fff 30%, var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+        }
+
+        .subtitle {
+            color: var(--muted);
+            font-size: 1.05rem;
+            line-height: 1.7;
+            margin-bottom: 3rem;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.25rem;
+            width: 100%;
+            max-width: 700px;
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 2rem 1.5rem;
+            text-decoration: none;
+            color: var(--text);
+            transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent);
+            box-shadow: 0 8px 30px rgba(108,99,255,0.15);
+        }
+
+        .card .icon { font-size: 2.5rem; }
+        .card .label {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+        .card .desc {
+            font-size: 0.8rem;
+            color: var(--muted);
+            text-align: center;
+        }
+
+        .card.auth  { --c: var(--accent); }
+        .card.cat   { --c: var(--accent3); }
+        .card.orders { --c: var(--accent2); }
+
+        .card:hover .label { color: var(--c); }
+
+        .stack {
+            margin-top: 3.5rem;
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .chip {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 0.75rem;
+            color: var(--muted);
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            padding: 0.3rem 0.9rem;
+        }
+
+        .dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        .dot.green  { background: var(--accent3); box-shadow: 0 0 0 0 rgba(67,233,123,.6); }
+        .dot.purple { background: var(--accent);  box-shadow: 0 0 0 0 rgba(108,99,255,.6); }
+        .dot.pink   { background: var(--accent2); box-shadow: 0 0 0 0 rgba(255,101,132,.6); }
+
+        @keyframes pulse {
+            0%,100% { box-shadow: 0 0 0 0 currentColor; }
+            50%      { box-shadow: 0 0 0 5px transparent; }
+        }
+    </style>
+</head>
+<body>
+    <div class="hero">
+        <span class="badge">🎓 Práctica Microservicios</span>
+        <h1>MicroTienda</h1>
+        <p class="subtitle">
+            Sistema demo que conecta tres microservicios independientes:<br>
+            <strong>Autenticación</strong> (Node.js + MongoDB) · <strong>Catálogo</strong> (Node.js + Supabase) · <strong>Pedidos</strong> (Python + MongoDB)
+        </p>
+
+        <div class="cards">
+            <a class="card auth" href="login.html">
+                <span class="icon">🔐</span>
+                <span class="label">Login / Registro</span>
+                <span class="desc">Autenticación con JWT<br>Node.js + MongoDB</span>
+            </a>
+            <a class="card cat" href="productos.html">
+                <span class="icon">🛍️</span>
+                <span class="label">Catálogo</span>
+                <span class="desc">CRUD de productos<br>Node.js + Supabase</span>
+            </a>
+            <a class="card orders" href="pedidos.html">
+                <span class="icon">📦</span>
+                <span class="label">Mis Pedidos</span>
+                <span class="desc">Crear y ver órdenes<br>Python + MongoDB</span>
+            </a>
+        </div>
+
+        <div class="stack">
+            <div class="chip"><span class="dot green"></span> usuarios-service :3001</div>
+            <div class="chip"><span class="dot purple"></span> catalogo-service :3003</div>
+            <div class="chip"><span class="dot pink"></span> pedidos-service :3002</div>
+        </div>
+    </div>
+</body>
+</html>
